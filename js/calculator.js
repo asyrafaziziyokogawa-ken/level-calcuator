@@ -1,85 +1,290 @@
-const Installation = {
+const Calculator = {
 
-    selected: "below",
+    unit: "mmH2O",
 
-    styles: {
 
-        below: {
-            name: "Below Low Tapping",
+    getInputs() {
 
-            description:
-                "DPT installed below HP / low tapping.",
+        return {
 
-            defaultElevation: 2500
-        },
+            sg1:
+                Number(
+                    document.getElementById(
+                        "sg1"
+                    ).value
+                ),
 
-        same: {
-            name: "Same Level as Low Tapping",
+            sg2:
+                Number(
+                    document.getElementById(
+                        "sg2"
+                    ).value
+                ),
 
-            description:
-                "DPT installed at HP / low tapping.",
+            h1:
+                Number(
+                    document.getElementById(
+                        "h1"
+                    ).value
+                ),
 
-            defaultElevation: 0
-        },
+            elevation:
+                Number(
+                    document.getElementById(
+                        "dptElevation"
+                    ).value
+                ),
 
-        middle: {
-            name: "Between Tappings",
+            level:
+                Number(
+                    document.getElementById(
+                        "levelInput"
+                    ).value
+                )
 
-            description:
-                "DPT installed between HP and LP tapping.",
-
-            defaultElevation: 2750
-        },
-
-        above: {
-            name: "Above Upper Tapping",
-
-            description:
-                "DPT installed above LP / upper tapping.",
-
-            defaultElevation: 6500
-        }
+        };
 
     },
 
 
-    select(style) {
+    calculate() {
 
-        this.selected = style;
-
-        document
-            .querySelectorAll(".installation-card")
-            .forEach(card => {
-
-                card.classList.remove("selected");
-
-            });
+        const data =
+            this.getInputs();
 
 
-        const selectedCard =
-            document.querySelector(
-                `[data-style="${style}"]`
+        /*
+         * Static head from transmitter
+         */
+
+        const staticHead =
+            data.sg1 *
+            data.elevation;
+
+
+        /*
+         * Dry-leg gas head
+         */
+
+        const gasHead =
+            data.sg2 *
+            (
+                data.h1 +
+                data.elevation
             );
 
 
-        if (selectedCard) {
+        /*
+         * LRV
+         */
 
-            selectedCard.classList.add("selected");
+        const lrv =
+            staticHead -
+            gasHead;
 
-        }
+
+        /*
+         * URV
+         */
+
+        const urv =
+            data.sg1 *
+            (
+                data.h1 +
+                data.elevation
+            )
+            -
+            gasHead;
+
+
+        /*
+         * Span
+         */
+
+        const span =
+            urv - lrv;
+
+
+        /*
+         * Current DP
+         */
+
+        const currentDP =
+            data.sg1 *
+            (
+                data.elevation +
+                data.h1 *
+                data.level /
+                100
+            )
+            -
+            gasHead;
+
+
+        /*
+         * Display results
+         */
+
+        document.getElementById(
+            "resultLRV"
+        ).textContent =
+            this.format(
+                this.convert(lrv)
+            );
 
 
         document.getElementById(
-            "selectedInstallation"
+            "resultURV"
         ).textContent =
-            this.styles[style].name;
+            this.format(
+                this.convert(urv)
+            );
+
+
+        document.getElementById(
+            "resultSpan"
+        ).textContent =
+            this.format(
+                this.convert(span)
+            );
+
+
+        document.getElementById(
+            "resultLevel"
+        ).textContent =
+            data.level.toFixed(1);
+
+
+        document.getElementById(
+            "resultDP"
+        ).textContent =
+            this.format(
+                this.convert(currentDP)
+            );
+
+
+        this.createCalibrationTable(
+            data
+        );
 
     },
 
 
-    get() {
+    convert(value) {
 
-        return this.styles[this.selected];
+        switch (this.unit) {
+
+            case "mbar":
+
+                return value *
+                    0.0980665;
+
+
+            case "kPa":
+
+                return value *
+                    0.00980665;
+
+
+            case "psi":
+
+                return value *
+                    0.001422334;
+
+
+            default:
+
+                return value;
+
+        }
+
+    },
+
+
+    format(value) {
+
+        return Number(value)
+            .toLocaleString(
+                undefined,
+                {
+                    maximumFractionDigits: 2
+                }
+            );
+
+    },
+
+
+    createCalibrationTable(data) {
+
+        const points =
+            [0, 25, 50, 75, 100];
+
+
+        const tbody =
+            document.getElementById(
+                "calibrationTable"
+            );
+
+
+        tbody.innerHTML = "";
+
+
+        points.forEach(level => {
+
+            const dp =
+                data.sg1 *
+                (
+                    data.elevation +
+                    data.h1 *
+                    level /
+                    100
+                )
+                -
+                data.sg2 *
+                (
+                    data.h1 +
+                    data.elevation
+                );
+
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>${level}%</td>
+
+                <td>
+                    ${this.format(dp)}
+                </td>
+
+                <td>
+                    ${this.format(
+                        dp * 0.0980665
+                    )}
+                </td>
+
+                <td>
+                    ${this.format(
+                        dp * 0.00980665
+                    )}
+                </td>
+
+                <td>
+                    ${this.format(
+                        dp * 0.001422334
+                    )}
+                </td>
+
+            `;
+
+
+            tbody.appendChild(row);
+
+        });
 
     }
 
