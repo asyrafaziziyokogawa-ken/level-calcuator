@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>LevelCalc Pro V9</title>
+    <title>LevelCalc Pro</title>
 
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -28,13 +28,13 @@
 
             <div>
                 <h1>LevelCalc Pro</h1>
-                <span>Level Measurement Engineering Tool</span>
+                <span>Interactive DP transmitter level calculator — Dry Leg</span>
             </div>
 
         </div>
 
-        <div class="version">
-            V9
+        <div class="live-calc">
+            LIVE CALCULATION
         </div>
 
     </header>
@@ -226,7 +226,7 @@
 
     <!-- =====================================================
          PAGE 2
-         V8/V6 CALCULATOR
+         CALCULATOR
     ====================================================== -->
 
     <section
@@ -271,20 +271,19 @@
 
 
         <!-- =================================================
-             V8/V6 MAIN LAYOUT
+             MAIN CALCULATOR LAYOUT
         ================================================== -->
 
         <div class="calculator-layout">
 
 
             <!-- =================================================
-                 LEFT SIDE
+                 LEFT SIDE: DIAGRAM
             ================================================== -->
 
             <div class="left-panel">
 
-
-                <!-- DIAGRAM -->
+                <!-- INTERACTIVE PROCESS DIAGRAM -->
 
                 <div class="panel diagram-panel">
 
@@ -490,260 +489,244 @@
                     <div class="diagram-legend">
 
                         <span>
-                            🔵 HP / Process Liquid
+                            🔵 Process liquid / HP impulse line
                         </span>
 
                         <span>
-                            ⚪ LP / Dry Leg
+                            ⚪ Dry leg / LP impulse line
                         </span>
 
                         <span>
                             🔴 Dimension
+
                         </span>
 
                     </div>
 
                 </div>
 
-
-
-                <!-- LEVEL INPUT -->
-
-                <div class="panel level-panel">
-
-                    <strong>
-                        LEVEL INPUT
-                    </strong>
-
-                    <div class="level-control">
-
-                        <span>
-                            Level (%)
-                        </span>
-
-                        <input
-                            id="levelSlider"
-                            type="range"
-                            min="0"
-                            max="100"
-                            value="50"
-                        >
-
-                        <input
-                            id="levelInput"
-                            type="number"
-                            min="0"
-                            max="100"
-                            value="50"
-                        >
-
-                        <span>
-                            %
-                        </span>
-
-                    </div>
-
-                </div>
 
             </div>
 
 
 
             <!-- =================================================
-                 RIGHT SIDE
+                 RIGHT SIDE: INPUTS & RESULTS
             ================================================== -->
 
             <div class="right-panel">
 
 
-                <!-- INPUT PARAMETERS -->
+                <!-- CALCULATION INPUTS -->
 
-                <div class="panel">
+                <div class="panel inputs-panel">
 
                     <div class="panel-title">
-                        INPUT PARAMETERS
+                        CALCULATION INPUTS
+                    </div>
+
+                    <div class="inputs-help">
+                        Dry leg method
                     </div>
 
 
-                    <div class="input-row">
+                    <!-- PROCESS DATA SECTION -->
 
-                        <label>
-                            Process Liquid SG (SG1)
-                        </label>
+                    <div class="input-section">
 
-                        <input
-                            id="sg1"
-                            type="number"
-                            step="0.001"
-                            value="0.800"
-                        >
+                        <div class="section-title">
+                            PROCESS DATA
+                        </div>
 
-                    </div>
+                        <div class="input-row two-cols">
 
+                            <div class="input-group">
+                                <label>
+                                    Liquid Specific Gravity (SG1)
+                                </label>
+                                <input
+                                    id="sg1"
+                                    type="number"
+                                    step="0.001"
+                                    value="0.800"
+                                >
+                            </div>
 
-                    <div class="input-row">
+                            <div class="input-group">
+                                <label>
+                                    Gas Specific Gravity (SG2)
+                                </label>
+                                <input
+                                    id="sg2"
+                                    type="number"
+                                    step="0.001"
+                                    value="0.008"
+                                >
+                            </div>
 
-                        <label>
-                            Process Gas SG (SG2)
-                        </label>
-
-                        <input
-                            id="sg2"
-                            type="number"
-                            step="0.001"
-                            value="0.008"
-                        >
-
-                    </div>
-
-
-                    <div class="input-row">
-
-                        <label>
-                            H1 — LP Tap to HP Tap
-                        </label>
-
-                        <input
-                            id="h1"
-                            type="number"
-                            value="5500"
-                        >
+                        </div>
 
                     </div>
 
 
-                    <div class="input-row">
+                    <!-- TANK & TRANSMITTER DIMENSIONS SECTION -->
 
-                        <label>
-                            DPT Elevation
-                        </label>
+                    <div class="input-section">
 
-                        <input
-                            id="dptElevation"
-                            type="number"
-                            value="2500"
-                        >
+                        <div class="section-title">
+                            TANK & TRANSMITTER DIMENSIONS
+                        </div>
+
+                        <div class="input-row two-cols">
+
+                            <div class="input-group">
+                                <label>
+                                    H1 — 0% to 100% level
+                                </label>
+                                <div class="input-with-unit">
+                                    <input
+                                        id="h1"
+                                        type="number"
+                                        value="5500"
+                                    >
+                                    <span class="unit">mm</span>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label>
+                                    H2 — HP tap to transmitter
+                                </label>
+                                <div class="input-with-unit">
+                                    <input
+                                        id="h2"
+                                        type="number"
+                                        value="2500"
+                                    >
+                                    <span class="unit">mm</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="input-row two-cols">
+
+                            <div class="input-group">
+                                <label>
+                                    H3 — LP tap to transmitter
+                                </label>
+                                <div class="input-with-unit">
+                                    <input
+                                        id="h3"
+                                        type="number"
+                                        value="8000"
+                                    >
+                                    <span class="unit">mm</span>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label>
+                                    Output Unit
+                                </label>
+                                <select id="outputUnit" class="select-unit">
+                                    <option value="mmH2O">mmH₂O</option>
+                                    <option value="mbar">mbar</option>
+                                    <option value="kPa">kPa</option>
+                                    <option value="psi">psi</option>
+                                </select>
+                            </div>
+
+                        </div>
 
                     </div>
 
 
-                    <div
-                        id="installationHelp"
-                        class="input-help">
+                    <!-- OPERATING LEVEL SECTION -->
+
+                    <div class="input-section">
+
+                        <div class="section-title">
+                            OPERATING LEVEL
+                        </div>
+
+                        <div class="input-row level-row">
+
+                            <div class="input-group">
+                                <label>
+                                    Current Level
+                                </label>
+                                <div class="level-input-group">
+                                    <input
+                                        id="levelInput"
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        value="50"
+                                    >
+                                    <span class="unit">%</span>
+                                </div>
+                            </div>
+
+                            <button id="resetButton" class="reset-button">
+                                Reset
+                            </button>
+
+                        </div>
 
                     </div>
 
                 </div>
 
 
+                <!-- RESULTS SECTION -->
 
-                <!-- RESULTS -->
+                <div class="panel results-panel">
 
-                <div class="panel">
+                    <div class="result-grid">
 
-                    <div class="panel-title">
-                        CALCULATION RESULTS
-                    </div>
+                        <div class="result-item">
+                            <span class="result-label">
+                                LRV @ 0%
+                            </span>
+                            <strong id="resultLRV" class="result-value">
+                                1,936.00
+                            </strong>
+                            <small>mmH₂O</small>
+                        </div>
 
+                        <div class="result-item">
+                            <span class="result-label">
+                                URV @ 100%
+                            </span>
+                            <strong id="resultURV" class="result-value">
+                                6,336.00
+                            </strong>
+                            <small>mmH₂O</small>
+                        </div>
 
-                    <div class="result-row">
-
-                        <span>
-                            LRV (0%)
-                        </span>
-
-                        <strong id="resultLRV">
-                            0
-                        </strong>
-
-                        <small>
-                            mmH₂O
-                        </small>
-
-                    </div>
-
-
-                    <div class="result-row">
-
-                        <span>
-                            URV (100%)
-                        </span>
-
-                        <strong id="resultURV">
-                            0
-                        </strong>
-
-                        <small>
-                            mmH₂O
-                        </small>
-
-                    </div>
-
-
-                    <div class="result-row">
-
-                        <span>
-                            Span
-                        </span>
-
-                        <strong id="resultSpan">
-                            0
-                        </strong>
-
-                        <small>
-                            mmH₂O
-                        </small>
-
-                    </div>
-
-
-                    <div class="result-row">
-
-                        <span>
-                            Current Level
-                        </span>
-
-                        <strong id="resultLevel">
-                            50
-                        </strong>
-
-                        <small>
-                            %
-                        </small>
-
-                    </div>
-
-
-                    <div class="result-row">
-
-                        <span>
-                            Current DP
-                        </span>
-
-                        <strong id="resultDP">
-                            0
-                        </strong>
-
-                        <small>
-                            mmH₂O
-                        </small>
+                        <div class="result-item">
+                            <span class="result-label">
+                                CURRENT DP
+                            </span>
+                            <strong id="resultDP" class="result-value">
+                                4,136.00
+                            </strong>
+                            <small>mmH₂O</small>
+                        </div>
 
                     </div>
 
                 </div>
 
 
+                <!-- 5 POINT CALIBRATION TABLE -->
 
-                <!-- 5 POINT -->
-
-                <div class="panel">
+                <div class="panel calibration-panel">
 
                     <div class="panel-title">
-
-                        5 POINT CALIBRATION
-
+                        5-POINT CALIBRATION TABLE
                     </div>
-
 
                     <table>
 
@@ -752,10 +735,8 @@
                             <tr>
 
                                 <th>Level</th>
-                                <th>mmH₂O</th>
-                                <th>mbar</th>
-                                <th>kPa</th>
-                                <th>psi</th>
+                                <th>DP</th>
+                                <th>Output</th>
 
                             </tr>
 
@@ -770,53 +751,17 @@
                 </div>
 
 
+                <!-- ASSUMPTIONS & NOTES -->
 
-                <!-- UNITS -->
-
-                <div class="panel">
+                <div class="panel notes-panel">
 
                     <div class="panel-title">
-
-                        OUTPUT UNIT
-
+                        ASSUMPTIONS & NOTES
                     </div>
 
-
-                    <div class="unit-buttons">
-
-                        <button
-                            class="unit-button active"
-                            data-unit="mmH2O">
-
-                            mmH₂O
-
-                        </button>
-
-                        <button
-                            class="unit-button"
-                            data-unit="mbar">
-
-                            mbar
-
-                        </button>
-
-                        <button
-                            class="unit-button"
-                            data-unit="kPa">
-
-                            kPa
-
-                        </button>
-
-                        <button
-                            class="unit-button"
-                            data-unit="psi">
-
-                            psi
-
-                        </button>
-
-                    </div>
+                    <p class="note-text">
+                        Assumption: dimensions are converted to mm and SG is referenced to water. Gas/liquid static head is included in the DP calculation, for an actual installation, verify process tapping arrangement, impulse line TR condition, temperature effects and transmitter datasheet requirements.
+                    </p>
 
                 </div>
 
