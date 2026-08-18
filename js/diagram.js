@@ -9,7 +9,7 @@ const Diagram = {
         const elevation =
             Number(
                 document.getElementById(
-                    "dptElevation"
+                    "h2"
                 ).value
             );
 
