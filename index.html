@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LevelCalc Pro — Dry Leg DP Level Calculator</title>
+<style>
+  #dynamicLiquid,#dynamicSurface,#levelLine{transition:d .35s ease;}
+  #liquidFill,#liquidSurface{transition:d .35s ease;}
+  :root{
+    --bg:#f4f7fb; --panel:#ffffff; --ink:#172033; --muted:#68748a;
+    --line:#dfe5ee; --accent:#2563eb; --accent2:#0ea5e9; --good:#059669;
+    --tank:#f8fafc; --liquid:#35a9e8; --pipe:#d9dee7; --danger:#dc2626;
+    --shadow:0 10px 30px rgba(20,35,60,.08);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  .app{max-width:1500px;margin:auto;padding:22px}
+  header{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:18px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;display:grid;place-items:center;font-weight:800}
+  h1{font-size:23px;margin:0}.sub{color:var(--muted);font-size:13px;margin-top:3px}
+  .badge{padding:8px 12px;border-radius:999px;background:#eaf2ff;color:#1d4ed8;font-size:12px;font-weight:700}
+  .grid{display:grid;grid-template-columns:minmax(500px,1.35fr) minmax(430px,1fr);gap:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+  .cardhead{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+  .cardhead h2{font-size:15px;margin:0}.cardhead span{font-size:12px;color:var(--muted)}
+  .diagram-wrap{padding:12px;background:#fbfcfe}
+  svg{width:100%;height:auto;display:block}
+  .controls{padding:16px}
+  .section-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#667085;margin:3px 0 10px}
+  .formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  label{font-size:12px;color:#566176;font-weight:650;display:block}
+  input,select{width:100%;margin-top:6px;padding:10px 11px;border:1px solid #ccd5e2;border-radius:9px;background:#fff;color:var(--ink);font-size:14px;outline:none}
+  input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.10)}
+  .unitrow{display:grid;grid-template-columns:1fr 125px;gap:10px}
+  .levelrow{display:grid;grid-template-columns:1fr 100px;gap:10px;align-items:end}
+  .actions{display:flex;gap:9px;margin-top:13px}
+  button{border:0;border-radius:9px;padding:10px 14px;font-weight:750;cursor:pointer}
+  .primary{background:var(--accent);color:#fff}.secondary{background:#eef2f7;color:#344054}
+  .results{padding:16px;border-top:1px solid var(--line)}
+  .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .metric{border:1px solid var(--line);border-radius:11px;padding:12px;background:#fcfdff}
+  .metric .k{font-size:11px;color:var(--muted);font-weight:700}.metric .v{font-size:20px;font-weight:800;margin-top:4px}.metric .u{font-size:11px;color:var(--muted)}
+  .formula{margin-top:12px;padding:12px;border-radius:10px;background:#f6f8fc;border:1px solid var(--line);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;line-height:1.6}
+  table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px}
+  th,td{padding:8px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}
+  th{color:var(--muted);font-size:11px}
+  .note{font-size:11px;color:var(--muted);line-height:1.45;margin-top:10px}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--muted);padding:0 16px 14px}
+  .dot{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:5px;vertical-align:-1px}
+  @media(max-width:1050px){.grid{grid-template-columns:1fr}.diagram-wrap{min-height:0}}
+  @media(max-width:600px){.app{padding:10px}.formgrid,.metrics{grid-template-columns:1fr}.unitrow,.levelrow{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <div class="logo">DP</div>
+      <div><h1>LevelCalc Pro</h1><div class="sub">Interactive DP transmitter level calculator — Dry Leg</div></div>
+    </div>
+    <div class="badge">LIVE CALCULATION</div>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <div class="cardhead"><h2>Interactive Process Diagram</h2><span>Values update as you type</span></div>
+      <div class="diagram-wrap">
+        <svg id="mainDiagram" viewBox="0 0 760 590" role="img"
+             aria-label="Interactive dry leg closed tank DP transmitter level measurement diagram">
+          <defs>
+            <linearGradient id="liq2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#55c8f2"/>
+              <stop offset="1" stop-color="#168fc9"/>
+            </linearGradient>
+            <clipPath id="tankClip2">
+              <path d="M105 135 Q250 75 395 135 L395 405 Q250 500 105 405 Z"/>
+            </clipPath>
+            <filter id="shadow2"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-opacity=".12"/></filter>
+          </defs>
+
+          <rect x="0" y="0" width="760" height="590" rx="14" fill="#f9fbfe"/>
+
+          <text x="34" y="38" font-size="21" font-weight="800" fill="#172033">
+            DRY LEG — CLOSED TANK
+          </text>
+          <text x="34" y="60" font-size="12" fill="#68748a">
+            DP transmitter level measurement
+          </text>
+
+          <!-- CLOSED TANK -->
+          <path d="M105 135 Q250 75 395 135 L395 405 Q250 500 105 405 Z"
+                fill="#fff" stroke="#344054" stroke-width="3" filter="url(#shadow2)"/>
+
+          <!-- INTERACTIVE LIQUID -->
+          <g clip-path="url(#tankClip2)">
+            <path id="dynamicLiquid"
+                  d="M105 350 Q250 320 395 350 L395 500 L105 500 Z"
+                  fill="url(#liq2)" opacity=".96"/>
+            <path id="dynamicSurface"
+                  d="M105 350 Q250 320 395 350"
+                  fill="none" stroke="#087eb6" stroke-width="2"/>
+          </g>
+
+          <text x="250" y="178" text-anchor="middle" font-size="18" font-weight="800">CLOSED TANK</text>
+          <text x="250" y="206" text-anchor="middle" font-size="13" fill="#667085">Process Gas</text>
+          <text x="250" y="228" text-anchor="middle" font-size="15" font-weight="700">
+            SG2 = <tspan id="svgSG2">0.008</tspan>
+          </text>
+          <text x="250" y="385" text-anchor="middle" font-size="15" font-weight="800" fill="#073b5c">
+            SG1 = <tspan id="svgSG1">0.800</tspan>
+          </text>
+
+          <!-- LEVEL SCALE -->
+          <line x1="62" y1="350" x2="105" y2="350" stroke="#475467" stroke-width="2"/>
+          <line x1="62" y1="135" x2="105" y2="135" stroke="#475467" stroke-width="2"/>
+          <text x="32" y="355" font-size="13" font-weight="700">0%</text>
+          <text x="23" y="140" font-size="13" font-weight="700">100%</text>
+
+          <!-- INPUT -->
+          <line x1="42" y1="270" x2="105" y2="270" stroke="#8b95a7" stroke-width="7"/>
+          <text x="42" y="250" font-size="12" font-weight="700">INPUT</text>
+
+          <!-- LP / DRY LEG: GREY FROM LP TAP TO DPT COVER FLANGE -->
+          <line x1="395" y1="135" x2="650" y2="135" stroke="#7d8795" stroke-width="7"/>
+          <line x1="650" y1="135" x2="650" y2="455" stroke="#7d8795" stroke-width="7"/>
+          <line x1="650" y1="455" x2="575" y2="455" stroke="#7d8795" stroke-width="7"/>
+          <text x="455" y="120" font-size="13" font-weight="800">LP</text>
+
+          <!-- HP / LIQUID LEG: BLUE FROM HP TAP TO DPT COVER FLANGE -->
+          <line x1="395" y1="350" x2="475" y2="350" stroke="#2496e8" stroke-width="7"/>
+          <line x1="475" y1="350" x2="475" y2="455" stroke="#2496e8" stroke-width="7"/>
+          <line x1="475" y1="455" x2="500" y2="455" stroke="#2496e8" stroke-width="7"/>
+          <text x="447" y="335" font-size="13" font-weight="800">HP</text>
+
+          <!-- DPT PHOTO: tubing terminates at the cover-flange connection points -->
+          <g transform="translate(500 425)">
+            <image href="data:image/jpeg;base64,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" x="0" y="0" width="92" height="122"
+                   preserveAspectRatio="xMidYMid meet"/>
+            <text x="46" y="140" text-anchor="middle" font-size="13" font-weight="800">DPT</text>
+          </g>
+
+          <!-- H1: LP TAP TO HP TAP -->
+          <line x1="425" y1="350" x2="425" y2="135" stroke="#ef4444" stroke-width="2"/>
+          <line x1="416" y1="350" x2="434" y2="350" stroke="#ef4444" stroke-width="2"/>
+          <line x1="416" y1="135" x2="434" y2="135" stroke="#ef4444" stroke-width="2"/>
+          <text x="445" y="246" font-size="13" font-weight="800" fill="#dc2626">
+            H1 = <tspan id="svgH1">5500</tspan>
+          </text>
+
+          <!-- H2: HP TAP TO DPT COVER FLANGE -->
+          <line x1="435" y1="350" x2="435" y2="455" stroke="#ef4444" stroke-width="2"/>
+          <line x1="426" y1="350" x2="444" y2="350" stroke="#ef4444" stroke-width="2"/>
+          <line x1="426" y1="455" x2="444" y2="455" stroke="#ef4444" stroke-width="2"/>
+          <text x="348" y="414" font-size="13" font-weight="800" fill="#dc2626">
+            H2 = <tspan id="svgH2">2500</tspan>
+          </text>
+
+          <!-- H3: LP TAP TO DPT COVER FLANGE -->
+          <line x1="680" y1="135" x2="680" y2="455" stroke="#ef4444" stroke-width="2"/>
+          <line x1="671" y1="135" x2="689" y2="135" stroke="#ef4444" stroke-width="2"/>
+          <line x1="671" y1="455" x2="689" y2="455" stroke="#ef4444" stroke-width="2"/>
+          <text x="694" y="305" font-size="13" font-weight="800" fill="#dc2626">
+            H3 = <tspan id="svgH3">8000</tspan>
+          </text>
+
+          <!-- CURRENT LEVEL GUIDE -->
+          <line id="levelLine" x1="105" y1="350" x2="395" y2="350"
+                stroke="#0f7fb8" stroke-width="2" stroke-dasharray="6 5"/>
+          <text id="levelText" x="250" y="335" text-anchor="middle"
+                font-size="12" font-weight="800" fill="#0f7fb8">LEVEL 50%</text>
+        </svg>
+      </div>
+      <div class="legend">
+        <span><i class="dot" style="background:#35a9e8"></i>Process liquid / HP impulse line</span>
+        <span><i class="dot" style="background:#d9dee7"></i>Dry gas / LP impulse line</span>
+        <span><i class="dot" style="background:#ef4444"></i>Dimension</span>
+      </div><div style="padding:7px 7px 0;font-size:10px;color:#667085;">
+          Dimension reference: <b>H2</b> = HP tapping to DPT cover flange; <b>H3</b> = LP tapping to DPT cover flange.
+        </div>
+    </section>
+
+    <section class="card">
+      <div class="cardhead"><h2>Calculation Inputs</h2><span>Dry-leg method</span></div>
+      <div class="controls">
+        <div class="section-title">Process Data</div>
+        <div class="formgrid">
+          <label>Liquid Specific Gravity (SG1)
+            <input id="sg1" type="number" step="0.001" value="0.8">
+          </label>
+          <label>Gas Specific Gravity (SG2)
+            <input id="sg2" type="number" step="0.001" value="0.008">
+          </label>
+        </div>
+
+        <div class="section-title" style="margin-top:16px">Tank & Transmitter Dimensions</div>
+        <div class="formgrid">
+          <label>H1 — 0% to 100% level
+            <div class="unitrow"><input id="h1" type="number" step="1" value="5500"><select id="heightUnit"><option value="mm">mm</option><option value="m">m</option><option value="in">in</option><option value="ft">ft</option></select></div>
+          </label>
+          <label>H2 — HP tap to transmitter
+            <input id="h2" type="number" step="1" value="2500">
+          </label>
+          <label>H3 — LP tap to transmitter
+            <input id="h3" type="number" step="1" value="8000">
+          </label>
+          <label>Output Unit
+            <select id="outUnit"><option value="mmH2O">mmH2O</option><option value="mbar">mbar</option><option value="kPa">kPa</option><option value="psi">psi</option></select>
+          </label>
+        </div>
+
+        <div class="section-title" style="margin-top:16px">Operating Level</div>
+        <div class="levelrow">
+          <label>Current Level
+            <input id="level" type="number" min="0" max="100" step="1" value="50">
+          </label>
+          <button class="secondary" id="resetBtn">Reset</button>
+        </div>
+
+        <div class="actions">
+          <button class="primary" id="calcBtn">Calculate</button>
+          <button class="secondary" id="exampleBtn">Load Example</button>
+        </div>
+      </div>
+
+      <div class="results">
+        <div class="metrics">
+          <div class="metric"><div class="k">LRV @ 0%</div><div class="v" id="lrv">19,360</div><div class="u" id="unit1">mmH2O</div></div>
+          <div class="metric"><div class="k">URV @ 100%</div><div class="v" id="urv">63,360</div><div class="u" id="unit2">mmH2O</div></div>
+          <div class="metric"><div class="k">CURRENT DP</div><div class="v" id="dp">41,360</div><div class="u" id="unit3">mmH2O</div></div>
+        </div>
+
+        <div class="formula">
+          <b>Dry-leg equation</b><br>
+          DP = SG1 × (Level + H2) − SG2 × H3<br>
+          LRV = SG1 × H2 − SG2 × H3<br>
+          URV = SG1 × (H1 + H2) − SG2 × H3
+        </div>
+
+        <div class="section-title" style="margin-top:15px">5-Point Calibration Table</div>
+        <table>
+          <thead><tr><th>Level</th><th>DP</th><th>Output</th></tr></thead>
+          <tbody id="points"></tbody>
+        </table>
+        <div class="note">
+          Assumption: dimensions are converted to mm and SG is referenced to water. Gas/liquid static head is included in the DP calculation. For an actual installation, verify process tapping arrangement, impulse-line fill condition, temperature effects and transmitter datasheet requirements.
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt = x => Number(x).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+function toMM(v,u){ return u==='mm'?v : u==='m'?v*1000 : u==='in'?v*25.4 : v*304.8; }
+function fromMMH2O(v,u){
+  if(u==='mmH2O') return v;
+  if(u==='mbar') return v*0.0980665;
+  if(u==='kPa') return v*0.00980665;
+  return v*0.001422334;
+}
+function read(){
+  const hu=$('heightUnit').value;
+  return {
+    sg1:parseFloat($('sg1').value)||0, sg2:parseFloat($('sg2').value)||0,
+    h1:toMM(parseFloat($('h1').value)||0,hu),
+    h2:toMM(parseFloat($('h2').value)||0,hu),
+    h3:toMM(parseFloat($('h3').value)||0,hu),
+    level:Math.min(100,Math.max(0,parseFloat($('level').value)||0)),
+    unit:$('outUnit').value
+  };
+}
+function calc(){
+  const d=read();
+  const lrv=d.sg1*d.h2-d.sg2*d.h3;
+  const urv=d.sg1*(d.h1+d.h2)-d.sg2*d.h3;
+  const currentHeight=d.h1*d.level/100;
+  const dp=d.sg1*(currentHeight+d.h2)-d.sg2*d.h3;
+  $('lrv').textContent=fmt(fromMMH2O(lrv,d.unit));
+  $('urv').textContent=fmt(fromMMH2O(urv,d.unit));
+  $('dp').textContent=fmt(fromMMH2O(dp,d.unit));
+  $('unit1').textContent=d.unit;$('unit2').textContent=d.unit;$('unit3').textContent=d.unit;
+
+  $('svgSG1').textContent=d.sg1.toFixed(3);
+  $('svgSG2').textContent=d.sg2.toFixed(3);
+  $('svgH1').textContent=Math.round(d.h1);
+  $('svgH2').textContent=Math.round(d.h2);
+  $('svgH3').textContent=Math.round(d.h3);
+
+  // Interactive level movement
+  const surfaceY=350-(215*d.level/100);
+  $('levelLine').setAttribute('y1',surfaceY);
+  $('levelLine').setAttribute('y2',surfaceY);
+  $('levelText').textContent='LEVEL '+d.level.toFixed(0)+'%';
+
+  $('dynamicLiquid').setAttribute(
+    'd',
+    `M105 ${surfaceY} Q250 ${surfaceY-30} 395 ${surfaceY} L395 500 L105 500 Z`
+  );
+  $('dynamicSurface').setAttribute(
+    'd',
+    `M105 ${surfaceY} Q250 ${surfaceY-30} 395 ${surfaceY}`
+  );
+
+  const rows=[0,25,50,75,100].map(p=>{
+    const val=d.sg1*(d.h1*p/100+d.h2)-d.sg2*d.h3;
+    return `<tr><td>${p}%</td><td>${fmt(val)}</td><td>${fmt(fromMMH2O(val,d.unit))} ${d.unit}</td></tr>`;
+  }).join('');
+  $('points').innerHTML=rows;
+}
+document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',calc));
+$('calcBtn').addEventListener('click',calc);
+$('resetBtn').addEventListener('click',()=>{
+  $('sg1').value=.8;$('sg2').value=.008;$('h1').value=5500;$('h2').value=2500;$('h3').value=8000;
+  $('heightUnit').value='mm';$('outUnit').value='mmH2O';$('level').value=50;calc();
+});
+$('exampleBtn').addEventListener('click',()=>{
+  $('sg1').value=.8;$('sg2').value=.008;$('h1').value=5500;$('h2').value=2500;$('h3').value=8000;
+  $('heightUnit').value='mm';$('outUnit').value='mmH2O';$('level').value=50;calc();
+});
+calc();
+</script>
+</body>
+</html>
