@@ -91,24 +91,13 @@ function openCalculator() {
 
 
     /*
-     * Set default DPT elevation
+     * Set default H2 (HP tap to transmitter)
      */
 
     document.getElementById(
-        "dptElevation"
+        "h2"
     ).value =
         selected.defaultElevation;
-
-
-
-    /*
-     * Installation description
-     */
-
-    document.getElementById(
-        "installationHelp"
-    ).textContent =
-        selected.description;
 
 
 
