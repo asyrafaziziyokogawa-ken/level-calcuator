@@ -1,117 +1,839 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>LevelCalc Pro — Dry Leg DP Level Calculator</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="css/style.css">
+    <title>LevelCalc Pro V9</title>
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
+
 <div class="app">
-<header>
-  <div class="brand"><div class="logo">DP</div><div><h1>LevelCalc Pro</h1><div class="sub">Level Measurement Engineering Tool</div></div></div>
-  <div class="badge" id="modeBadge">STEP 1 • INSTALLATION SELECTION</div>
-</header>
 
-<section id="selectionPage" class="selection-page">
-  <div class="hero">
-    <div class="eyebrow">STEP 1</div>
-    <h2>Select Transmitter Installation Style</h2>
-    <p>Select where the DP transmitter is installed relative to the HP (low) and LP (upper) tapping points.</p>
-  </div>
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
 
-  <div class="style-grid">
-    <button class="style-card selected" data-style="below">
-      <b>01</b><h3>Below Low Tapping</h3><p>DPT below HP / low tapping</p>
-      <div class="mini"><span class="tank"></span><span class="hp"></span><span class="lp"></span><span class="dpt d1"></span></div>
-    </button>
-    <button class="style-card" data-style="same">
-      <b>02</b><h3>Same Level as Low Tapping</h3><p>DPT at HP / low tapping</p>
-      <div class="mini"><span class="tank"></span><span class="hp"></span><span class="lp"></span><span class="dpt d2"></span></div>
-    </button>
-    <button class="style-card" data-style="mid">
-      <b>03</b><h3>Between Tappings</h3><p>DPT between HP and LP tappings</p>
-      <div class="mini"><span class="tank"></span><span class="hp"></span><span class="lp"></span><span class="dpt d3"></span></div>
-    </button>
-    <button class="style-card" data-style="above">
-      <b>04</b><h3>Above Upper Tapping</h3><p>DPT above LP / upper tapping</p>
-      <div class="mini"><span class="tank"></span><span class="hp"></span><span class="lp"></span><span class="dpt d4"></span></div>
-    </button>
-  </div>
+    <header class="app-header">
 
-  <div class="selection-note"><b>Selection:</b> <span id="selectionText">Below Low Tapping</span>. The calculator will automatically use the transmitter elevation relative to the tapping points.</div>
-  <button id="continueBtn" class="continue">Continue to Calculator →</button>
-</section>
+        <div class="brand">
 
-<section id="calculatorPage" class="hidden">
-  <div class="stepbar"><button id="backBtn" class="back">← Change Installation</button><div><div class="eyebrow">STEP 2</div><div class="selected-style" id="selectedStyle">Below Low Tapping</div></div><div class="badge">DRY LEG • CLOSED TANK</div></div>
+            <div class="brand-logo">
+                DP
+            </div>
 
-  <div class="main">
-    <div>
-      <section class="card diagram-card">
-        <div class="diagram-title">INTERACTIVE PROCESS DIAGRAM</div>
-        <div class="diagram-wrap">
-          <svg id="mainDiagram" viewBox="0 0 760 590">
-            <defs>
-              <linearGradient id="liq" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#55c8f2"/><stop offset="1" stop-color="#168fc9"/></linearGradient>
-              <clipPath id="tankClip"><path d="M105 135 Q250 75 395 135 L395 405 Q250 500 105 405 Z"/></clipPath>
-            </defs>
-            <rect width="760" height="590" rx="14" fill="#f9fbfe"/>
-            <text x="34" y="38" font-size="21" font-weight="800" fill="#172033">DRY LEG — CLOSED TANK</text>
-            <text x="34" y="60" font-size="12" fill="#68748a">DP transmitter level measurement</text>
+            <div>
+                <h1>LevelCalc Pro</h1>
+                <span>Level Measurement Engineering Tool</span>
+            </div>
 
-            <path d="M105 135 Q250 75 395 135 L395 405 Q250 500 105 405 Z" fill="#fff" stroke="#344054" stroke-width="3"/>
-            <g clip-path="url(#tankClip)"><path id="liquid" d="M105 350 Q250 320 395 350 L395 500 L105 500Z" fill="url(#liq)"/><path id="surface" d="M105 350 Q250 320 395 350" fill="none" stroke="#087eb6" stroke-width="2"/></g>
-            <text x="250" y="178" text-anchor="middle" font-size="18" font-weight="800">CLOSED TANK</text>
-            <text x="250" y="206" text-anchor="middle" font-size="13" fill="#667085">Process Gas</text>
-            <text x="250" y="228" text-anchor="middle" font-size="15" font-weight="700">SG2 = <tspan id="svgSG2">0.008</tspan></text>
-            <text x="250" y="385" text-anchor="middle" font-size="15" font-weight="800" fill="#073b5c">SG1 = <tspan id="svgSG1">0.800</tspan></text>
-
-            <line x1="62" y1="350" x2="105" y2="350" stroke="#475467" stroke-width="2"/><line x1="62" y1="135" x2="105" y2="135" stroke="#475467" stroke-width="2"/>
-            <text x="32" y="355" font-size="13" font-weight="700">0%</text><text x="23" y="140" font-size="13" font-weight="700">100%</text>
-            <line x1="42" y1="270" x2="105" y2="270" stroke="#8b95a7" stroke-width="7"/><text x="42" y="250" font-size="12" font-weight="700">INPUT</text>
-
-            <g id="piping"></g>
-            <g id="dpt"><image href="images/dpt-transmitter.jpg" x="0" y="0" width="92" height="122"/><text x="46" y="140" text-anchor="middle" font-size="13" font-weight="800">DPT</text></g>
-            <g id="dims"></g>
-            <line id="levelLine" x1="105" y1="350" x2="395" y2="350" stroke="#0f7fb8" stroke-width="2" stroke-dasharray="6 5"/>
-            <text id="levelText" x="250" y="335" text-anchor="middle" font-size="12" font-weight="800" fill="#0f7fb8">LEVEL 50%</text>
-          </svg>
         </div>
-        <div class="legend"><span>🔵 Process liquid / HP side</span><span>⚪ Dry gas / LP side</span><span>🔴 Dimension</span></div>
-        <div class="diagram-note" id="diagramNote"></div>
-      </section>
 
-      <section class="card levelbox">
-        <b>LEVEL INPUT</b><div class="levelrow"><span>Level (%)</span><input id="levelSlider" type="range" min="0" max="100" value="50"><input id="level" type="number" min="0" max="100" value="50"><span>%</span></div>
-      </section>
-    </div>
+        <div class="version">
+            V9
+        </div>
 
-    <div class="right">
-      <section class="card panel"><div class="ptitle">INPUT PARAMETERS</div>
-        <label>Process Liquid SG (SG1)<input id="sg1" type="number" step=".001" value=".8"></label>
-        <label>Process Gas SG (SG2)<input id="sg2" type="number" step=".001" value=".008"></label>
-        <label>H1 — LP tap to HP tap (mm)<input id="h1" type="number" value="5500"></label>
-        <label>Transmitter elevation relative to HP tap (mm)<input id="elev" type="number" value="2500"></label>
-        <div class="help" id="elevHelp"></div>
-      </section>
+    </header>
 
-      <section class="card panel results"><div class="ptitle">CALCULATION RESULTS</div>
-        <div class="rr"><b>LRV (0%)</b><strong id="lrv">0</strong><span>mmH₂O</span></div>
-        <div class="rr"><b>URV (100%)</b><strong id="urv">0</strong><span>mmH₂O</span></div>
-        <div class="rr"><span>Span</span><strong id="span">0</strong><span>mmH₂O</span></div>
-        <div class="rr"><span>Current Level</span><strong id="curlevel">50.0</strong><span>%</span></div>
-        <div class="rr"><b>Current DP</b><strong id="dp">0</strong><span>mmH₂O</span></div>
-      </section>
 
-      <section class="card panel"><div class="ptitle">5 POINT CALIBRATION</div><table><thead><tr><th>Level</th><th>mmH₂O</th><th>mbar</th><th>kPa</th><th>psi</th></tr></thead><tbody id="points"></tbody></table></section>
+    <!-- =====================================================
+         PAGE 1
+         INSTALLATION SELECTION
+    ====================================================== -->
 
-      <section class="card panel"><div class="ptitle">OUTPUT UNIT</div><div class="units"><button class="unit active" data-u="mmH2O">mmH₂O</button><button class="unit" data-u="mbar">mbar</button><button class="unit" data-u="kPa">kPa</button><button class="unit" data-u="psi">psi</button></div></section>
-    </div>
-  </div>
-</section>
+    <section id="installationPage" class="page">
+
+        <div class="page-title">
+
+            <div class="step">
+                STEP 1
+            </div>
+
+            <h2>
+                Select Transmitter Installation Style
+            </h2>
+
+            <p>
+                Select the transmitter installation position relative
+                to the tank tapping points.
+            </p>
+
+        </div>
+
+
+        <div class="installation-grid">
+
+            <!-- STYLE 01 -->
+
+            <button
+                class="installation-card selected"
+                data-style="below">
+
+                <div class="card-number">
+                    01
+                </div>
+
+                <h3>
+                    Below Low Tapping
+                </h3>
+
+                <p>
+                    DPT installed below HP / low tapping.
+                </p>
+
+                <div class="installation-preview">
+
+                    <div class="preview-tank"></div>
+
+                    <div class="preview-hp"></div>
+
+                    <div class="preview-lp"></div>
+
+                    <div class="preview-dpt below"></div>
+
+                </div>
+
+            </button>
+
+
+            <!-- STYLE 02 -->
+
+            <button
+                class="installation-card"
+                data-style="same">
+
+                <div class="card-number">
+                    02
+                </div>
+
+                <h3>
+                    Same Level as Low Tapping
+                </h3>
+
+                <p>
+                    DPT installed at HP / low tapping.
+                </p>
+
+                <div class="installation-preview">
+
+                    <div class="preview-tank"></div>
+
+                    <div class="preview-hp"></div>
+
+                    <div class="preview-lp"></div>
+
+                    <div class="preview-dpt same"></div>
+
+                </div>
+
+            </button>
+
+
+            <!-- STYLE 03 -->
+
+            <button
+                class="installation-card"
+                data-style="middle">
+
+                <div class="card-number">
+                    03
+                </div>
+
+                <h3>
+                    Between Tappings
+                </h3>
+
+                <p>
+                    DPT installed between HP and LP tapping.
+                </p>
+
+                <div class="installation-preview">
+
+                    <div class="preview-tank"></div>
+
+                    <div class="preview-hp"></div>
+
+                    <div class="preview-lp"></div>
+
+                    <div class="preview-dpt middle"></div>
+
+                </div>
+
+            </button>
+
+
+            <!-- STYLE 04 -->
+
+            <button
+                class="installation-card"
+                data-style="above">
+
+                <div class="card-number">
+                    04
+                </div>
+
+                <h3>
+                    Above Upper Tapping
+                </h3>
+
+                <p>
+                    DPT installed above LP / upper tapping.
+                </p>
+
+                <div class="installation-preview">
+
+                    <div class="preview-tank"></div>
+
+                    <div class="preview-hp"></div>
+
+                    <div class="preview-lp"></div>
+
+                    <div class="preview-dpt above"></div>
+
+                </div>
+
+            </button>
+
+        </div>
+
+
+        <div class="selection-summary">
+
+            <strong>Selected installation:</strong>
+
+            <span id="selectedInstallation">
+                Below Low Tapping
+            </span>
+
+        </div>
+
+
+        <button
+            id="continueButton"
+            class="primary-button">
+
+            Continue to Calculator →
+
+        </button>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         PAGE 2
+         V8/V6 CALCULATOR
+    ====================================================== -->
+
+    <section
+        id="calculatorPage"
+        class="page hidden">
+
+
+        <!-- CALCULATOR TOP BAR -->
+
+        <div class="calculator-toolbar">
+
+            <button
+                id="changeInstallation"
+                class="secondary-button">
+
+                ← Change Installation
+
+            </button>
+
+
+            <div class="calculator-title">
+
+                <div class="step">
+                    STEP 2
+                </div>
+
+                <strong id="calculatorInstallation">
+                    Below Low Tapping
+                </strong>
+
+            </div>
+
+
+            <div class="dry-leg-badge">
+
+                DRY LEG • CLOSED TANK
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             V8/V6 MAIN LAYOUT
+        ================================================== -->
+
+        <div class="calculator-layout">
+
+
+            <!-- =================================================
+                 LEFT SIDE
+            ================================================== -->
+
+            <div class="left-panel">
+
+
+                <!-- DIAGRAM -->
+
+                <div class="panel diagram-panel">
+
+                    <div class="panel-title">
+
+                        INTERACTIVE PROCESS DIAGRAM
+
+                    </div>
+
+
+                    <div class="diagram-container">
+
+                        <svg
+                            id="processDiagram"
+                            viewBox="0 0 760 590">
+
+                            <!-- Tank -->
+
+                            <defs>
+
+                                <linearGradient
+                                    id="liquidGradient"
+                                    x1="0"
+                                    y1="0"
+                                    x2="0"
+                                    y2="1">
+
+                                    <stop
+                                        offset="0"
+                                        stop-color="#55c8f2"/>
+
+                                    <stop
+                                        offset="1"
+                                        stop-color="#168fc9"/>
+
+                                </linearGradient>
+
+
+                                <clipPath id="tankClip">
+
+                                    <path
+                                        d="
+                                        M105 135
+                                        Q250 75 395 135
+                                        L395 405
+                                        Q250 500 105 405
+                                        Z"/>
+
+                                </clipPath>
+
+                            </defs>
+
+
+                            <!-- Tank -->
+
+                            <path
+                                d="
+                                M105 135
+                                Q250 75 395 135
+                                L395 405
+                                Q250 500 105 405
+                                Z"
+
+                                fill="white"
+                                stroke="#344054"
+                                stroke-width="3"
+                            />
+
+
+                            <!-- Animated liquid -->
+
+                            <g clip-path="url(#tankClip)">
+
+                                <path
+                                    id="liquidLevel"
+                                    fill="url(#liquidGradient)"
+                                    d=""
+                                />
+
+                                <path
+                                    id="liquidSurface"
+                                    fill="none"
+                                    stroke="#087eb6"
+                                    stroke-width="2"
+                                    d=""
+                                />
+
+                            </g>
+
+
+                            <text
+                                x="250"
+                                y="178"
+                                text-anchor="middle"
+                                font-size="18"
+                                font-weight="800">
+
+                                CLOSED TANK
+
+                            </text>
+
+
+                            <text
+                                x="250"
+                                y="206"
+                                text-anchor="middle"
+                                font-size="13"
+                                fill="#667085">
+
+                                Process Gas
+
+                            </text>
+
+
+                            <text
+                                x="250"
+                                y="228"
+                                text-anchor="middle"
+                                font-size="15"
+                                font-weight="700">
+
+                                SG2 =
+                                <tspan id="diagramSG2">
+                                    0.008
+                                </tspan>
+
+                            </text>
+
+
+                            <text
+                                x="250"
+                                y="385"
+                                text-anchor="middle"
+                                font-size="15"
+                                font-weight="800">
+
+                                SG1 =
+                                <tspan id="diagramSG1">
+                                    0.800
+                                </tspan>
+
+                            </text>
+
+
+                            <!-- Piping -->
+
+                            <g id="processPiping"></g>
+
+
+                            <!-- DPT -->
+
+                            <g id="dptSymbol">
+
+                                <image
+                                    id="dptImage"
+                                    x="0"
+                                    y="0"
+                                    width="92"
+                                    height="122"
+                                    href="images/dpt-transmitter.png"
+                                />
+
+                            </g>
+
+
+                            <!-- Dimensions -->
+
+                            <g id="dimensions"></g>
+
+
+                            <!-- Current level -->
+
+                            <line
+                                id="levelLine"
+                                x1="105"
+                                y1="350"
+                                x2="395"
+                                y2="350"
+                                stroke="#0f7fb8"
+                                stroke-width="2"
+                                stroke-dasharray="6 5"
+                            />
+
+
+                            <text
+                                id="levelText"
+                                x="250"
+                                y="335"
+                                text-anchor="middle"
+                                font-size="12"
+                                font-weight="800"
+                                fill="#0f7fb8">
+
+                                LEVEL 50%
+
+                            </text>
+
+                        </svg>
+
+                    </div>
+
+
+                    <div class="diagram-legend">
+
+                        <span>
+                            🔵 HP / Process Liquid
+                        </span>
+
+                        <span>
+                            ⚪ LP / Dry Leg
+                        </span>
+
+                        <span>
+                            🔴 Dimension
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- LEVEL INPUT -->
+
+                <div class="panel level-panel">
+
+                    <strong>
+                        LEVEL INPUT
+                    </strong>
+
+                    <div class="level-control">
+
+                        <span>
+                            Level (%)
+                        </span>
+
+                        <input
+                            id="levelSlider"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="50"
+                        >
+
+                        <input
+                            id="levelInput"
+                            type="number"
+                            min="0"
+                            max="100"
+                            value="50"
+                        >
+
+                        <span>
+                            %
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 RIGHT SIDE
+            ================================================== -->
+
+            <div class="right-panel">
+
+
+                <!-- INPUT PARAMETERS -->
+
+                <div class="panel">
+
+                    <div class="panel-title">
+                        INPUT PARAMETERS
+                    </div>
+
+
+                    <div class="input-row">
+
+                        <label>
+                            Process Liquid SG (SG1)
+                        </label>
+
+                        <input
+                            id="sg1"
+                            type="number"
+                            step="0.001"
+                            value="0.800"
+                        >
+
+                    </div>
+
+
+                    <div class="input-row">
+
+                        <label>
+                            Process Gas SG (SG2)
+                        </label>
+
+                        <input
+                            id="sg2"
+                            type="number"
+                            step="0.001"
+                            value="0.008"
+                        >
+
+                    </div>
+
+
+                    <div class="input-row">
+
+                        <label>
+                            H1 — LP Tap to HP Tap
+                        </label>
+
+                        <input
+                            id="h1"
+                            type="number"
+                            value="5500"
+                        >
+
+                    </div>
+
+
+                    <div class="input-row">
+
+                        <label>
+                            DPT Elevation
+                        </label>
+
+                        <input
+                            id="dptElevation"
+                            type="number"
+                            value="2500"
+                        >
+
+                    </div>
+
+
+                    <div
+                        id="installationHelp"
+                        class="input-help">
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- RESULTS -->
+
+                <div class="panel">
+
+                    <div class="panel-title">
+                        CALCULATION RESULTS
+                    </div>
+
+
+                    <div class="result-row">
+
+                        <span>
+                            LRV (0%)
+                        </span>
+
+                        <strong id="resultLRV">
+                            0
+                        </strong>
+
+                        <small>
+                            mmH₂O
+                        </small>
+
+                    </div>
+
+
+                    <div class="result-row">
+
+                        <span>
+                            URV (100%)
+                        </span>
+
+                        <strong id="resultURV">
+                            0
+                        </strong>
+
+                        <small>
+                            mmH₂O
+                        </small>
+
+                    </div>
+
+
+                    <div class="result-row">
+
+                        <span>
+                            Span
+                        </span>
+
+                        <strong id="resultSpan">
+                            0
+                        </strong>
+
+                        <small>
+                            mmH₂O
+                        </small>
+
+                    </div>
+
+
+                    <div class="result-row">
+
+                        <span>
+                            Current Level
+                        </span>
+
+                        <strong id="resultLevel">
+                            50
+                        </strong>
+
+                        <small>
+                            %
+                        </small>
+
+                    </div>
+
+
+                    <div class="result-row">
+
+                        <span>
+                            Current DP
+                        </span>
+
+                        <strong id="resultDP">
+                            0
+                        </strong>
+
+                        <small>
+                            mmH₂O
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- 5 POINT -->
+
+                <div class="panel">
+
+                    <div class="panel-title">
+
+                        5 POINT CALIBRATION
+
+                    </div>
+
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Level</th>
+                                <th>mmH₂O</th>
+                                <th>mbar</th>
+                                <th>kPa</th>
+                                <th>psi</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="calibrationTable">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+
+                <!-- UNITS -->
+
+                <div class="panel">
+
+                    <div class="panel-title">
+
+                        OUTPUT UNIT
+
+                    </div>
+
+
+                    <div class="unit-buttons">
+
+                        <button
+                            class="unit-button active"
+                            data-unit="mmH2O">
+
+                            mmH₂O
+
+                        </button>
+
+                        <button
+                            class="unit-button"
+                            data-unit="mbar">
+
+                            mbar
+
+                        </button>
+
+                        <button
+                            class="unit-button"
+                            data-unit="kPa">
+
+                            kPa
+
+                        </button>
+
+                        <button
+                            class="unit-button"
+                            data-unit="psi">
+
+                            psi
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
 </div>
+
+
+<script src="js/installation.js"></script>
 <script src="js/calculator.js"></script>
+<script src="js/diagram.js"></script>
+<script src="js/app.js"></script>
+
 </body>
+
 </html>
