@@ -31,7 +31,7 @@ const Calculator = {
             elevation:
                 Number(
                     document.getElementById(
-                        "dptElevation"
+                        "h2"
                     ).value
                 ),
 
